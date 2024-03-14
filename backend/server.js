@@ -18,13 +18,16 @@ app.use(bodyParser.urlencoded({ extended: true, limit: "500mb" }));
 // Define routes
 app.use("/api", router);
 
-// Serve static files
-app.use(express.static("build"));
+// deployment config
+const path = require("path");
+__dirname = path.resolve();
 
-// Serve index.html for any other requests
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "/frontend/build")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "frontend", "build", "index.html"));
+  });
+}
 
 // Start the server
 app.listen(PORT, () => {
